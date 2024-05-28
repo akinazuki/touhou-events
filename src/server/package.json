@@ -5,6 +5,8 @@
   "license": "MIT",
   "main": "src/index.ts",
   "dependencies": {
-    "@types/node": "^20.12.12"
+    "@types/lodash": "^4.17.4",
+    "@types/node": "^20.12.12",
+    "lodash": "^4.17.21"
   }
 }
