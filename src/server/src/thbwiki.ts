@@ -44,34 +44,34 @@ function paddingMonth(month: number) {
   return month < 10 ? `0${month}` : month.toString();
 }
 
-const res = await fetchSpecificMonth(new Date());
-console.log(res);
+// const res = await fetchSpecificMonth(new Date());
+// console.log(res);
 
-// const finalEvents = [];
+const finalEvents = [];
 
-// for (let year = 1997; year <= 2024; year++) {
-//   for (const i of Array(12).keys()) {
-//     const startDate = new Date(year, i, 1);
-//     const endDate = new Date(year, i + 1, 1);
-//     try {
-//       const result = await fetchMonthBetween(startDate, endDate);
-//       if (!result) {
-//         console.log(`No events for ${year}-${paddingMonth(i + 1)}`);
-//         continue;
-//       }
-//       finalEvents.push(...result);
-//     }
-//     catch (e) {
-//       console.error(e);
-//     }
-//     finally {
-//       await sleep(1000);
-//     }
-//   }
-// }
+for (let year = 1997; year <= 2024; year++) {
+  for (const i of Array(12).keys()) {
+    const startDate = new Date(year, i, 1);
+    const endDate = new Date(year, i + 1, 1);
+    try {
+      const result = await fetchMonthBetween(startDate, endDate);
+      if (!result) {
+        console.log(`No events for ${year}-${paddingMonth(i + 1)}`);
+        continue;
+      }
+      finalEvents.push(...result);
+    }
+    catch (e) {
+      console.error(e);
+    }
+    finally {
+      await sleep(1000);
+    }
+  }
+}
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// fs.writeFileSync("events.json", JSON.stringify(finalEvents, null, 2));
+fs.writeFileSync("thbwiki.json", JSON.stringify(finalEvents, null, 2));
