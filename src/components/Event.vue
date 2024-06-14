@@ -7,7 +7,13 @@ function calcDays(end: number, start: number): string {
   return days > 1 ? `+ (${days}) days` : "";
 }
 function extractEventLocation(desc: string): string {
-  return desc.split("于").splice(1).join("").split("举办")[0].trim();
+  // eslint-disable-next-line prefer-const
+  let descExtracted: string = desc.split("于").splice(1).join("").split("举办")[0].trim();
+
+  // if (navigator.language !== "zh-CN")
+  //   descExtracted = descExtracted.replaceAll("中国台湾地区", "台湾").replaceAll("台湾省", "台湾");
+
+  return descExtracted;
 }
 </script>
 
