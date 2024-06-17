@@ -14,7 +14,7 @@ async function fetchSpecificMonth(specifiedDate: Date) {
   return events;
 }
 
-async function fetchMonthBetween(startDate: Date, endDate: Date) {
+export async function fetchMonthBetween(startDate: Date, endDate: Date) {
   const startMonth = startDate.getMonth() + 1;
   console.log(`Fetching ${startDate.getFullYear()}-${paddingMonth(startMonth)}`);
   const url = `${endPoint}${formatDateToMonthFirstDay(startDate)}/${formatDateToMonthFirstDay(endDate)}`;
@@ -40,38 +40,13 @@ function formatDateToMonthLastDay(date: Date) {
   return `${date.getFullYear()}-${paddingMonth(date.getMonth() + 1)}-${thisMonthDays}`;
 }
 
-function paddingMonth(month: number) {
+export function paddingMonth(month: number) {
   return month < 10 ? `0${month}` : month.toString();
 }
 
 // const res = await fetchSpecificMonth(new Date());
 // console.log(res);
 
-const finalEvents = [];
-
-for (let year = 1997; year <= 2024; year++) {
-  for (const i of Array(12).keys()) {
-    const startDate = new Date(year, i, 1);
-    const endDate = new Date(year, i + 1, 1);
-    try {
-      const result = await fetchMonthBetween(startDate, endDate);
-      if (!result) {
-        console.log(`No events for ${year}-${paddingMonth(i + 1)}`);
-        continue;
-      }
-      finalEvents.push(...result);
-    }
-    catch (e) {
-      console.error(e);
-    }
-    finally {
-      await sleep(1000);
-    }
-  }
-}
-
-async function sleep(ms: number) {
+export async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-fs.writeFileSync("thbwiki.json", JSON.stringify(finalEvents, null, 2));

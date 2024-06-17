@@ -5,24 +5,33 @@ export interface Event {
   title: string;
   desc: string;
   url: string;
-  type: string[];
+  type?: string[];
   color: string;
-  uniqueId: string;
-  location: EventLocation;
-  platform: EventPlatform;
+  uniqueId?: string;
+  location?: EventLocation;
+  platform?: EventPlatform;
   extra?: EventExtra;
+}
+
+export interface LocationEntity {
+  id: string;
+  addressLine1: string;
+  addressLine2: string;
+  fullAddress: string;
+  title: string;
+  lat: number;
+  long: number;
 }
 
 export interface EventLocation {
   type: LocationType;
   text: string;
   desc: string;
-  lnglat: [number, number];
+  entity: LocationEntity;
 }
 
 export enum LocationType {
-  wgs84 = "wgs84",
-  amap = "amap",
+  GOOGLE = "google",
 }
 
 export interface EventExtra {

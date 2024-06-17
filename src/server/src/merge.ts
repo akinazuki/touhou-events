@@ -7,7 +7,7 @@ import { type Event, EventPlatform } from "./Event";
 
 // import eventManager from "./eventManager";
 
-function processThbWikiEvents() {
+export function processThbWikiEvents(thbEvents: Event[]) {
   const thbEventsFinal = thbEvents
     .map((event: Event) => {
       const newId = `THB_${event.id.toString()}`;
@@ -18,9 +18,10 @@ function processThbWikiEvents() {
         desc: event.desc.toString().replaceAll("\n", ""),
       }, ["icon", "startStr", "endStr"]) as Event;
     })
-    .filter(event => event.desc.endsWith("举办"))
-    .map((event) => {
-      const descExtracted: string = event.desc.split("于").splice(1).join("").split("举办")[0].trim();
+    .filter((event: Event) => event.desc.endsWith("举办"))
+    .map((event: Event) => {
+      let descExtracted: string = event.desc.split("于").splice(1).join("").split("举办")[0].trim();
+      descExtracted = descExtracted.replaceAll("中国台湾地区", "台湾").replaceAll("台湾省", "台湾"); // workaround for location search
       return {
         ...event,
         location: descExtracted,
@@ -29,9 +30,20 @@ function processThbWikiEvents() {
     });
   return thbEventsFinal;
 }
+export async function searchLocation(location: string) {
+  return fetch(`https://api.serverless.touhou.events/location/search`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      q: location,
+    }),
+  });
+}
 
 try {
-  const thbEventsFinal = processThbWikiEvents();
+  const thbEventsFinal = processThbWikiEvents(thbEvents);
   fs.writeFileSync("events.json", JSON.stringify(thbEventsFinal, null, 2));
 }
 catch (e) {
