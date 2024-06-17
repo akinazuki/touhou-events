@@ -27,11 +27,13 @@ function extractEventLocation(desc: string): string {
           <p class="w-full text-gray-800 font-bold">
             {{ event.title }}
           </p>
-          <p class="w-full text-gray-600 text-xs">
+          <p class="w-full text-gray-600 text-xs flex items-center gap-1">
             <MapPin class="inline-block w-4 h-4" />
             {{ extractEventLocation(event.desc) }}
           </p>
-          <p class="w-full text-gray-600 text-xs">
+          <p
+            class="w-full text-gray-600 text-xs flex items-center gap-1"
+          >
             <CalendarDays class="inline-block w-4 h-4" />
             {{ new Date(event.start * 1000).toLocaleDateString('ja-JP') }} {{ calcDays(event.end, event.start) }}
           </p>
