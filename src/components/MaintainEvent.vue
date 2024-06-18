@@ -18,6 +18,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from "@/components/ui/tags-input";
 // const hasEvts = (eventsFinal as Event[]).filter((event: Event) => {
 //   return !event.location?.entity || !event.location.text;
 // });
@@ -178,6 +179,17 @@ function nextEvent() {
       {{ event.location?.text === "" ? "No location" : event.location?.text }}
     </option> -->
     <div class="flex flex-col gap-2">
+      <label for="type" class="text-sm">标签</label>
+      <TagsInput v-model="event.type">
+        <TagsInputItem v-for="item in event.type" :key="item" :value="item">
+          <TagsInputItemText />
+          <TagsInputItemDelete />
+        </TagsInputItem>
+
+        <TagsInputInput placeholder="活动类型" />
+      </TagsInput>
+    </div>
+    <div class="flex flex-col gap-2">
       <label for="location" class="text-sm">地点</label>
       <div class="relative w-full items-center">
         <Input v-model="event.location.text" type="text" class="pl-10" />
@@ -192,7 +204,7 @@ function nextEvent() {
           [{{ index }}] {{ entity.addressLine1 }} | {{ entity.addressLine2 }}
         </option>
       </select>
-      <div v-show="selectedEntity?.id">
+      <div v-show="selectedEntity?.id" class="truncate">
         <label for="location" class="text-sm">完整地址</label>
         <pre>
         {{ selectedEntity?.addressLine1 }}
