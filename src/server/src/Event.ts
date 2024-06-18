@@ -26,8 +26,8 @@ export interface LocationEntity {
 export interface EventLocation {
   type: LocationType;
   text: string;
-  desc: string;
-  entity: LocationEntity;
+  desc?: string;
+  entity?: LocationEntity[];
 }
 
 export enum LocationType {
