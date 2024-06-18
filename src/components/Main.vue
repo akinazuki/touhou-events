@@ -7,9 +7,12 @@ const needMargin = ref(false);
 
 <template>
   <div class="flex flex-col ">
-    <Placeholder message="Header" class="h-24 p-2" />
+    <!-- <Placeholder message="Header" class="h-24 p-2" /> -->
+    <div class="h-24 px-8 mt-1 items-center w-full flex">
+      <span class="text-4xl text-title">東方活動記録</span>
+    </div>
 
-    <div class="flex">
+    <div class="flex px-6">
       <Placeholder message="Sidebar" class="w-[20%] p-2" />
       <div
         :class="{
@@ -24,6 +27,13 @@ const needMargin = ref(false);
 </template>
 
 <style>
+.text-title {
+  background-image: linear-gradient(to right, pink, purple);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 html {
   scroll-behavior: smooth;
   background-color: #f8f8f8;
