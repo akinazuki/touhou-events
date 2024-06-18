@@ -8,8 +8,17 @@ const needMargin = ref(false);
 <template>
   <div class="flex flex-col ">
     <!-- <Placeholder message="Header" class="h-24 p-2" /> -->
-    <div class="h-24 px-8 mt-1 items-center w-full flex">
-      <span class="text-4xl text-title">東方活動記録</span>
+    <div class="h-16 px-8 mt-1 items-center w-full flex">
+      <div class="flex items-baseline">
+        <span class="text-4xl text-title">東方活動記録</span>
+        <span class="text-lg text-muted-foreground ml-2">by
+          <a
+            href="https://touhou.works"
+            target="_blank"
+            class="text-gray-600 underline underline-offset-2"
+          >幻夢結社</a>
+        </span>
+      </div>
     </div>
 
     <div class="flex px-6">
