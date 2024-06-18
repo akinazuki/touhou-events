@@ -7,7 +7,7 @@ import {
   fromAbsolute,
   getLocalTimeZone,
 } from "@internationalized/date";
-import { Calendar as CalendarIcon } from "lucide-vue-next";
+import { Calendar as CalendarIcon, MapPinIcon } from "lucide-vue-next";
 import { useRoute, useRouter } from "vue-router";
 import eventsFinal from "../server/eventsFinal.json";
 import type { Event } from "../server/src/Event";
@@ -179,7 +179,13 @@ function nextEvent() {
     </option> -->
     <div class="flex flex-col gap-2">
       <label for="location" class="text-sm">地点</label>
-      <Input v-model="event.location.text" type="text" />
+      <div class="relative w-full items-center">
+        <Input v-model="event.location.text" type="text" class="pl-10" />
+        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+          <MapPinIcon class="size-6 text-muted-foreground" />
+        </span>
+      </div>
+
       <label class="text-sm">已选择 [ {{ entityId }} ], 备选: {{ event.location.entity?.length || 0 }} 个地址</label>
       <select v-model="entityId" class="border border-gray-500 p-2">
         <option v-for="(entity, index) in event.location.entity" :key="entity.id" :value="index">

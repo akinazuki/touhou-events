@@ -17,7 +17,7 @@ const needMargin = ref(false);
       <div
         :class="{
           'm-2': needMargin,
-        }" class="w-[60%] overflow-y-auto flex flex-col m-4 h-[calc(100vh-8rem)]"
+        }" class="w-[60%] overflow-y-auto flex flex-col m-4 h-[calc(100vh-8rem-0.25rem)]"
       >
         <router-view />
       </div>
