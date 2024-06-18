@@ -26,16 +26,5 @@ const needMargin = ref(false);
   </div>
 </template>
 
-<style>
-.text-title {
-  background-image: linear-gradient(to right, pink, purple);
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-html {
-  scroll-behavior: smooth;
-  background-color: #f8f8f8;
-}
+<style scoped>
 </style>
