@@ -68,7 +68,7 @@ const compiledMarkdownHTML = computed(() => {
 .markdown h4,
 .markdown h5,
 .markdown h6 {
-  margin-top: 1.5rem;
+  /* margin-top: 1.5rem; */
   margin-bottom: 0.5rem;
 }
 .markdown h1 {
