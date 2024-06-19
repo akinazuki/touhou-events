@@ -59,23 +59,32 @@ function nextEvent() {
 <template>
   <div class="p-4 flex flex-col gap-2">
     <b>活动事件 [ {{ evtId }} ] , 共 {{ hasEvts.length }} 个活动</b>
-    <div class="flex flex-col gap-2">
-      <label for="title" class="text-sm">标题</label>
-      <Input v-model="event.title" type="text" />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="url" class="text-sm">URL</label>
-      <Input v-model="event.url" type="text" />
-      <!-- <a :href="event.url" target="_blank" class="text-blue-500 hover:underline font-bold">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="title" class="text-sm">标题</label>
+        <Input v-model="event.title" type="text" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="url" class="text-sm">URL</label>
+        <Input v-model="event.url" type="text" />
+        <!-- <a :href="event.url" target="_blank" class="text-blue-500 hover:underline font-bold">
         {{ event.title }}
       </a> -->
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <DatePicker :date="{ start: event.start, end: event.end }" @update:date="datePicked" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="location" class="text-sm">地点</label>
+      <LocationSearch
+        :location-entity="event.location?.entity"
+        @update:location-entity-selected="locationEntitySelected"
+      />
     </div>
     <div class="flex flex-col gap-2">
       <label for="description" class="text-sm">描述</label>
       <Textarea v-model="event.desc" />
-    </div>
-    <div class="flex flex-col gap-2">
-      <DatePicker :date="{ start: event.start, end: event.end }" @update:date="datePicked" />
     </div>
     <!-- <option :value="event.id" class="truncate">
       {{ event.location?.text === "" ? "No location" : event.location?.text }}
@@ -90,32 +99,6 @@ function nextEvent() {
 
         <TagsInputInput placeholder="活动类型" />
       </TagsInput>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="location" class="text-sm">地点</label>
-      <LocationSearch :location-entity="event.location?.entity" @update:location-entity-selected="locationEntitySelected" />
-      <!--
-      <div class="relative w-full items-center">
-        <Input v-model="event.location.text" type="text" class="pl-10" />
-        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-          <MapPinIcon class="size-6 text-muted-foreground" />
-        </span>
-      </div>
-
-      <label class="text-sm">已选择 [ {{ entityId }} ], 备选: {{ event.location.entity?.length || 0 }} 个地址</label>
-      <select v-model="entityId" class="border border-gray-500 p-2">
-        <option v-for="(entity, index) in event.location.entity" :key="entity.id" :value="index">
-          [{{ index }}] {{ entity.addressLine1 }} | {{ entity.addressLine2 }}
-        </option>
-      </select>
-      <div v-show="selectedEntity?.id" class="truncate">
-        <label for="location" class="text-sm">完整地址</label>
-        <pre>
-        {{ selectedEntity?.addressLine1 }}
-        {{ selectedEntity?.addressLine2 }}
-      </pre>
-        <code class="text-xs"># {{ selectedEntity?.id }}</code>
-      </div> -->
     </div>
     <div class="mt-4 flex flex-col gap-2">
       <Button class="bg-green-500 text-white hover:bg-green-500/90" @click="saveEvent">
