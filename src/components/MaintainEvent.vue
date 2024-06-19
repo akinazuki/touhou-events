@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { watchDebounced } from "@vueuse/core";
-
 import { useRoute, useRouter } from "vue-router";
+import { marked } from "marked";
 import eventsFinal from "../server/eventsFinal.json";
 import type { Event, LocationEntity } from "../server/src/Event";
+import MarkdownRender from "./MarkdownRender.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -12,8 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { deepCopy } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import LocationSearch from "@/components/LocationSearch.vue";
+import TabSwitch from "@/components/TabSwitch.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from "@/components/ui/tags-input";
+import DescriptionEditor from "@/components/DescriptionEditor.vue";
 // const hasEvts = (eventsFinal as Event[]).filter((event: Event) => {
 //   return !event.location?.entity || !event.location.text;
 // });
@@ -59,12 +62,13 @@ function nextEvent() {
 <template>
   <div class="p-4 flex flex-col gap-2">
     <b>活动事件 [ {{ evtId }} ] , 共 {{ hasEvts.length }} 个活动</b>
-    <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-2">
+
+    <div class="grid grid-cols-2 gap-4 justify-between">
+      <div class="flex flex-col gap-2 w-full">
         <label for="title" class="text-sm">标题</label>
         <Input v-model="event.title" type="text" />
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 w-full">
         <label for="url" class="text-sm">URL</label>
         <Input v-model="event.url" type="text" />
         <!-- <a :href="event.url" target="_blank" class="text-blue-500 hover:underline font-bold">
@@ -72,9 +76,7 @@ function nextEvent() {
       </a> -->
       </div>
     </div>
-    <div class="flex flex-col gap-2">
-      <DatePicker :date="{ start: event.start, end: event.end }" @update:date="datePicked" />
-    </div>
+    <DatePicker :date="{ start: event.start, end: event.end }" @update:date="datePicked" />
     <div class="flex flex-col gap-2">
       <label for="location" class="text-sm">地点</label>
       <LocationSearch
@@ -84,11 +86,15 @@ function nextEvent() {
     </div>
     <div class="flex flex-col gap-2">
       <label for="description" class="text-sm">描述</label>
-      <Textarea v-model="event.desc" />
+      <TabSwitch>
+        <template #editor>
+          <DescriptionEditor v-model="event.desc" />
+        </template>
+        <template #preview>
+          <MarkdownRender :content="event.desc" />
+        </template>
+      </TabSwitch>
     </div>
-    <!-- <option :value="event.id" class="truncate">
-      {{ event.location?.text === "" ? "No location" : event.location?.text }}
-    </option> -->
     <div class="flex flex-col gap-2">
       <label for="type" class="text-sm">标签</label>
       <TagsInput v-model="event.type">
@@ -110,3 +116,10 @@ function nextEvent() {
     </div>
   </div>
 </template>
+
+<style>
+.md-body {
+  width: 50%;
+  margin-left: 20px;
+}
+</style>

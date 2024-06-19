@@ -46,48 +46,50 @@ function getDaysBetweenDates(start: DateValue, end: DateValue): number {
 </script>
 
 <template>
-  <div class="flex flex-row justify-between">
-    <div class="flex flex-col items-start gap-2">
-      <label for="date" class="text-sm">开始日期</label>
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button
-            variant="outline" :class="cn(
-              'w-[280px] justify-start text-left font-normal',
-              !newDate.start && 'text-muted-foreground',
-            )"
-          >
-            <CalendarIcon class="mr-2 h-4 w-4" />
-            {{ newDate.start ? df.format(newDate.start.toDate(getLocalTimeZone())) : "Select date" }}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-auto p-0">
-          <Calendar v-model="newDate.start" initial-focus />
-        </PopoverContent>
-      </Popover>
-    </div>
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-row justify-between gap-4">
+      <div class="flex flex-col w-[50%] gap-2">
+        <label for="date" class="text-sm">开始日期</label>
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="outline" :class="cn(
+                'w-full justify-start text-left font-normal',
+                !newDate.start && 'text-muted-foreground',
+              )"
+            >
+              <CalendarIcon class="mr-2 h-4 w-4" />
+              {{ newDate.start ? df.format(newDate.start.toDate(getLocalTimeZone())) : "Select date" }}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-auto p-0">
+            <Calendar v-model="newDate.start" initial-focus />
+          </PopoverContent>
+        </Popover>
+      </div>
 
-    <div class="flex flex-col items-start gap-2">
-      <label for="date" class="text-sm">结束日期</label>
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button
-            variant="outline" :class="cn(
-              'w-[280px] justify-start text-left font-normal',
-              !newDate.end && 'text-muted-foreground',
-            )"
-          >
-            <CalendarIcon class="mr-2 h-4 w-4" />
-            {{ newDate.end ? df.format(newDate.end.toDate(getLocalTimeZone())) : "Select date" }}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-auto p-0">
-          <Calendar v-model="newDate.end" :min-value="newDate.start" initial-focus />
-        </PopoverContent>
-      </Popover>
+      <div class="flex flex-col w-[50%] gap-2">
+        <label for="date" class="text-sm">结束日期</label>
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="outline" :class="cn(
+                'w-full justify-start text-left font-normal',
+                !newDate.end && 'text-muted-foreground',
+              )"
+            >
+              <CalendarIcon class="mr-2 h-4 w-4" />
+              {{ newDate.end ? df.format(newDate.end.toDate(getLocalTimeZone())) : "Select date" }}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-auto p-0">
+            <Calendar v-model="newDate.end" :min-value="newDate.start" initial-focus />
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
-  </div>
-  <div class="flex flex-col gap-2 text-sm">
-    持续时间: {{ getDaysBetweenDates(newDate.start, newDate.end) }} 天
+    <div class="flex flex-col gap-2 text-sm">
+      持续时间: {{ getDaysBetweenDates(newDate.start, newDate.end) }} 天
+    </div>
   </div>
 </template>
