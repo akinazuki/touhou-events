@@ -5,7 +5,8 @@
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "buildHierarchy": "tsx src/splitFile.ts"
   },
   "dependencies": {
     "@types/lodash": "^4.17.4",

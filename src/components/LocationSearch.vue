@@ -74,45 +74,51 @@ function locationSelected(entity: LocationEntity): void {
 
 <template>
   <div class="flex flex-col gap-2">
-    <Popover v-model:open="open">
-      <PopoverTrigger as-child>
-        <Button variant="outline" role="combobox" :aria-expanded="open" class="w-[60%] justify-between truncate">
-          <span class="truncate">
-            {{ displayLocationText
-              ? displayLocationText
-              : "选择位置" }}
-          </span>
-          <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent class="w-fit p-0">
-        <Command>
-          <CommandInput class="h-9" placeholder="搜索位置..." :oninput="valueChanged" />
-          <CommandEmpty>{{ searchLocationText !== '' ? `找不到位置 「　${searchLocationText}　」` : '请输入位置以搜索' }}</CommandEmpty>
-          <CommandList>
-            <CommandGroup>
-              <CommandItem
-                v-for="entity in locationEntities" :key="entity.id" :value="entity" @select="(ev) => {
-                  // console.log(ev.detail.value);
-                  locationSelected(ev.detail.value as LocationEntity);
-                  open = false
-                }"
-              >
-                {{ entity.addressLine1 }} {{ entity.addressLine2 ? ` | ${entity.addressLine2}` : '' }}
-                <Check
-                  :class="cn(
-                    'ml-2 h-4 w-4',
-                    displayLocationText === entity.addressLine1 ? 'opacity-100' : 'opacity-0',
-                  )"
-                />
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-    <div class="flex flex-col text-xs truncate">
-      <p>{{ selectedEntity?.addressLine2 }}</p>
+    <div class="flex flex-row gap-4 justify-between">
+      <div class="w-[50%]">
+        <Popover v-model:open="open">
+          <PopoverTrigger as-child>
+            <Button variant="outline" role="combobox" :aria-expanded="open" class="w-full justify-between truncate">
+              <span class="truncate">
+                {{ displayLocationText
+                  ? displayLocationText
+                  : "选择位置" }}
+              </span>
+              <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-fit p-0">
+            <Command>
+              <CommandInput class="h-9" placeholder="搜索位置..." :oninput="valueChanged" />
+              <CommandEmpty>
+                {{ searchLocationText !== '' ? `找不到位置 「　${searchLocationText}　」` : '请输入位置以搜索' }}
+              </CommandEmpty>
+              <CommandList>
+                <CommandGroup>
+                  <CommandItem
+                    v-for="entity in locationEntities" :key="entity.id" :value="entity" @select="(ev) => {
+                      // console.log(ev.detail.value);
+                      locationSelected(ev.detail.value as LocationEntity);
+                      open = false
+                    }"
+                  >
+                    {{ entity.addressLine1 }} {{ entity.addressLine2 ? ` | ${entity.addressLine2}` : '' }}
+                    <Check
+                      :class="cn(
+                        'ml-2 h-4 w-4',
+                        displayLocationText === entity.addressLine1 ? 'opacity-100' : 'opacity-0',
+                      )"
+                    />
+                  </CommandItem>
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div class="w-[50%] flex flex-col text-xs truncate justify-center">
+        <p>{{ selectedEntity?.addressLine2 }}</p>
+      </div>
     </div>
   </div>
 </template>
