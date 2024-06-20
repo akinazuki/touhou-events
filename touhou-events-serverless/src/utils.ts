@@ -102,14 +102,16 @@ export class GitHub {
     });
   }
 
-  public async writeFile(path: string, content: string, message: string = `Update ${path}`, committer = defaultGithubCommitter): Promise<boolean> {
-    const fileSHA = await this.readFile(path).then((r) => {
+  public async getFileSHA(path: string) {
+    return await this.readFile(path).then((r) => {
       if (!r.ok)
         return false;
       return r.json().then(r => (r as any).sha);
     });
-    console.log(`File SHA: ${fileSHA}`);
+  }
 
+  public async writeFile(path: string, content: string, message: string = `Update ${path}`, committer = defaultGithubCommitter): Promise<boolean> {
+    const fileSHA = await this.getFileSHA(path);
     return fetch(`https://api.github.com/repos/${this.repository}/contents/${path}`, {
       method: "PUT",
       headers: {
@@ -118,6 +120,25 @@ export class GitHub {
       body: JSON.stringify({
         message,
         content: Buffer.from(content).toString("base64"),
+        committer,
+        sha: fileSHA,
+      }),
+    }).then((r) => {
+      return !!r.ok;
+    });
+  }
+
+  public async removeFile(path: string, message: string = `Remove ${path}`, committer = defaultGithubCommitter): Promise<boolean> {
+    const fileSHA = await this.getFileSHA(path);
+    if (!fileSHA)
+      return false;
+    return fetch(`https://api.github.com/repos/${this.repository}/contents/${path}`, {
+      method: "DELETE",
+      headers: {
+        ...defaultGitHubHeader,
+      },
+      body: JSON.stringify({
+        message,
         committer,
         sha: fileSHA,
       }),
