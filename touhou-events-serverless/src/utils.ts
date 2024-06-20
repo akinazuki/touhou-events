@@ -21,6 +21,75 @@ export const defaultGithubCommitter = {
   email: "mnt@touhou.events",
 };
 
+export function generateSteamLoginUrl(returnTo: string, realm: string) {
+  const params = new URLSearchParams({
+    openid_ns: "http://specs.openid.net/auth/2.0",
+    openid_mode: "checkid_setup",
+    openid_return_to: returnTo,
+    openid_realm: realm,
+    openid_identity: "http://specs.openid.net/auth/2.0/identifier_select",
+    openid_claimed_id: "http://specs.openid.net/auth/2.0/identifier_select",
+  });
+
+  return `https://steamcommunity.com/openid/login?${params.toString()}`;
+}
+
+export async function validateSteamResponse(queryParams: URLSearchParams) {
+  const params = new URLSearchParams(queryParams);
+  params.append("openid.mode", "check_authentication");
+
+  const steamValidationUrlPrefix = "https://steamcommunity.com/openid/login";
+  const steamValidationUrl = `${steamValidationUrlPrefix}`;
+  console.log("Validating Steam login:", steamValidationUrl);
+  console.log("Steam login verification params:", params.toString());
+  try {
+    const response = await fetch(steamValidationUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString(),
+    });
+
+    const text = await response.text();
+    if (text.includes("is_valid:true")) {
+      const steamId = params.get("openid.claimed_id");
+      if (!steamId) {
+        return {
+          status: false,
+          error: "Steam login verification failed, no Steam ID found in response",
+        };
+      }
+
+      return {
+        status: true,
+        steamId: steamId.split("/").pop(),
+      };
+    }
+    else {
+      return {
+        status: false,
+        error: "Steam login verification failed",
+      };
+    }
+  }
+  catch (error: any) {
+    console.error("Error during Steam login verification:", error);
+    return {
+      error: error.message,
+    };
+  }
+}
+
+export async function getSteamUserInformation(steamId: string) {
+  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_APIKEY}&steamids=${steamId}`)
+    .then(r => r.json()).then(r => (r as any).response.players).then((r) => {
+      if (!r || r.length === 0)
+        return null;
+      return r[0];
+    });
+}
+
 export class GitHub {
   repository: string;
   constructor(repository: string) {
@@ -33,7 +102,7 @@ export class GitHub {
     });
   }
 
-  public async writeFile(path: string, content: string, message: string = `Update ${path}`, committer = defaultGithubCommitter) {
+  public async writeFile(path: string, content: string, message: string = `Update ${path}`, committer = defaultGithubCommitter): Promise<boolean> {
     const fileSHA = await this.readFile(path).then((r) => {
       if (!r.ok)
         return false;
@@ -52,6 +121,8 @@ export class GitHub {
         committer,
         sha: fileSHA,
       }),
+    }).then((r) => {
+      return !!r.ok;
     });
   }
 
