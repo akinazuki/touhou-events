@@ -4,7 +4,7 @@ import router from "../router";
 import { GitHub, formatMonthDay, sanitizeFileName, serializeJSON, validateJWT } from "../utils";
 
 const exampleObject = {
-  id: "CODE-G_ev-25",
+  slug: "code-g-25",
   start: 1711152000,
   end: 1711152000,
   title: "CODE-G Vol.25 -MIDNIGHT TOHO MUSIC PARTY-",
@@ -35,7 +35,7 @@ router.post("/maintain/editEvent", validateJWT, async ({ env, req }) => {
       content: any;
       metadata: {
         date: number;
-        name: string;
+        slug: string;
       };
     };
 
@@ -52,7 +52,16 @@ router.post("/maintain/editEvent", validateJWT, async ({ env, req }) => {
 
         return true;
       },
-      name: _.isString,
+      slug: (value: any) => {
+        if (!_.isString(value))
+          throw new Error("metadata.slug is not a string");
+        if (value.length < 3 || value.length > 128)
+          throw new Error("metadata.slug is not between 3 and 128 characters");
+        if (value !== content.slug)
+          throw new Error("metadata.slug does not match content.slug");
+
+        return true;
+      },
     })) {
       console.log(metadata);
       throw new Error("metadata is invalid");
@@ -61,10 +70,10 @@ router.post("/maintain/editEvent", validateJWT, async ({ env, req }) => {
     const verifyContentResponse = checkContentError(content);
     const sanitizedDate = new Date(metadata.date * 1000);
 
-    const sanitizedPathName = `${sanitizedDate.getFullYear()}/${formatMonthDay(sanitizedDate)}/${sanitizeFileName(metadata.name, "_")}.json`;
+    const sanitizedPathName = `${sanitizedDate.getFullYear()}/${formatMonthDay(sanitizedDate)}/${sanitizeFileName(metadata.slug, "_")}.json`;
     const gh = new GitHub(GITHUB_REPOSITORY);
     const commitContent = JSON.stringify(content, null, 2);
-    const commitMessage = `Update Event [ ${metadata.name} ]\n\nDate: ${sanitizedDate.toISOString()}\n\nMaintainer: [${req.auth.personaname}](https://steamcommunity.com/profiles/${req.auth.steamid})`;
+    const commitMessage = `Update Event [ ${metadata.slug} ]\n\nDate: ${sanitizedDate.toISOString()}\n\nMaintainer: [${req.auth.personaname}](https://steamcommunity.com/profiles/${req.auth.steamid})`;
     const res = await gh.writeFile(sanitizedPathName, commitContent, commitMessage);
     return serializeJSON({ success: verifyContentResponse, sanitizedPathName, commitResponse: res });
   }
@@ -80,7 +89,7 @@ function checkContentError(content: any) {
     throw new Error("$root is not an object");
 
   const comformsRoot = _.conformsTo(content, {
-    id: _.isString,
+    slug: _.isString,
     start: _.isNumber,
     end: _.isNumber,
     title: _.isString,
