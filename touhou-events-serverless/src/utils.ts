@@ -171,6 +171,44 @@ export class GitHub {
     });
   }
 
+  public async search(query: string, page = 1, perPage = 10) {
+    // no escape for query
+    const queryBuild = decodeURIComponent(new URLSearchParams({
+      q: `${query}+in:file+language:json+repo:${this.repository}+fork:true`,
+      per_page: perPage.toString(),
+      page: page.toString(),
+    }).toString());
+    const searchResult = await fetch(`https://api.github.com/search/code?${queryBuild}`, {
+      headers: {
+        ...defaultGitHubHeader,
+        Accept: "application/vnd.github.v3.text-match+json",
+      },
+    }).then(r => r.json()).then((r: any) => {
+      return {
+        total_count: r.total_count,
+        items: r.items,
+      };
+    });
+    const items = searchResult.items.map((i: any) => {
+      return {
+        ...i,
+        html_url: undefined,
+        git_url: undefined,
+        repository: i.repository.full_name,
+        text_matches: i.text_matches.map((m: any) => {
+          return {
+            fragment: m.fragment,
+            matches: m.matches,
+          };
+        }),
+      };
+    });
+    return {
+      total_count: searchResult.total_count,
+      items,
+    };
+  }
+
   public async readJSONFile(path: string) {
     return await this.readFile(path).then(async (r) => {
       if (!r.ok)
