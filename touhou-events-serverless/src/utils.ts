@@ -1,5 +1,7 @@
 import { Buffer } from "node:buffer";
-import { GITHUB_APIKEY } from "../.env";
+import { SignJWT, jwtVerify } from "jose";
+import { GITHUB_APIKEY, JWT_SECRET, STEAM_APIKEY } from "../.env";
+import type { AuthUser } from "./routers/steamLogin";
 
 export function serializeJSON(data: any, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -80,14 +82,36 @@ export async function validateSteamResponse(queryParams: URLSearchParams) {
     };
   }
 }
+export interface Player {
+  steamid: string;
+  communityvisibilitystate: number;
+  profilestate: number;
+  personaname: string;
+  commentpermission: number;
+  profileurl: string;
+  avatar: string;
+  avatarmedium: string;
+  avatarfull: string;
+  avatarhash: string;
+  lastlogoff: number;
+  personastate: number;
+  primaryclanid: string;
+  timecreated: number;
+  personastateflags: number;
+  loccountrycode: string;
+  locstatecode: string;
+  loccityid: number;
+}
+export async function getSteamUserInformation(steamIds: string[]): Promise<Player[]> {
+  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_APIKEY}&steamids=${steamIds.join(",")}`)
+    .then(r => r.json()).then(r => (r as any).response.players as Player[]);
+  // .then((r) => {
 
-export async function getSteamUserInformation(steamId: string) {
-  return fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${STEAM_APIKEY}&steamids=${steamId}`)
-    .then(r => r.json()).then(r => (r as any).response.players).then((r) => {
-      if (!r || r.length === 0)
-        return null;
-      return r[0];
-    });
+  // if (!r || r.length === 0)
+  // return [];
+  //   return null;
+  // return r.length === 1 ? r[0] : r;
+  // });
 }
 
 export class GitHub {
@@ -154,4 +178,52 @@ export class GitHub {
       return await r.json().then(r => JSON.parse(Buffer.from((r as any).content, "base64").toString()));
     });
   }
+}
+
+export async function signJWTByPlayerData(player: Player) {
+  const { avatarfull, steamid, personaname, loccountrycode } = player;
+  const payload = { avatarfull, steamid, personaname, loccountrycode };
+  return await new SignJWT({ payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("90d")
+    .sign(JWT_SECRET);
+}
+
+export async function validateJWT({ req }) {
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  if (!token)
+    return serializeJSON({ error: "Unauthorized" }, 401);
+
+  const { payload: jwtVerified } = await jwtVerify(token, JWT_SECRET);
+  req.auth = jwtVerified.payload as AuthUser;
+}
+
+export function sanitizeFileName(fileName: string, replacement = "_") {
+  function truncate(sanitized: string, length: number) {
+    const uint8Array = new TextEncoder().encode(sanitized);
+    const truncated = uint8Array.slice(0, length);
+    return new TextDecoder().decode(truncated);
+  };
+  const illegalRe = /[/?<>\\:*|"]/g;
+  const controlRe = /[\x00-\x1F\x80-\x9F]/g;
+  const reservedRe = /^\.+$/;
+  const windowsReservedRe = /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i;
+
+  function sanitize(input: string, replacement: string) {
+    const sanitized = input
+      .replace(illegalRe, replacement)
+      .replace(controlRe, replacement)
+      .replace(reservedRe, replacement)
+      .replace(windowsReservedRe, replacement);
+    return truncate(sanitized, 255);
+  }
+  return sanitize(fileName, replacement);
+}
+
+export function formatMonthDay(date: Date): string {
+  function paddingZero(num: number): string {
+    return num.toString().padStart(2, "0");
+  }
+  return `${paddingZero(date.getMonth() + 1)}-${paddingZero(date.getDate())}`;
 }
