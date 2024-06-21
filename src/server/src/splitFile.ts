@@ -2,7 +2,7 @@ import fs from "node:fs";
 import Evts from "../eventsFinal.json";
 import type { Event } from "./Event";
 
-const GENERATE_FOLDER = `/private/tmp/touhou-events-archive`;
+const GENERATE_FOLDER = `/private/tmp/touhou-events-archive-sandbox`;
 
 for (const event of Evts as Event[]) {
   const {
@@ -15,10 +15,23 @@ for (const event of Evts as Event[]) {
   makeFolder(eventFolder);
   createEventFile(event, eventFolder);
 }
+function slugify(text: string) {
+  return text
+    .toString() // Cast to string
+    .normalize("NFD") // Change diacritics
+    .replace(/[\u0300-\u036F]/g, "") // Remove diacritics
+    .toLowerCase() // Change to lowercase
+    .trim() // Remove spaces at the beginning and end
+    .replace(/\s+/g, "-") // Replace spaces with -
+    // .replace(/[^\w-]+/g, "") // Remove non-word characters
+    .replace(/-{2,}/g, "-"); // Replace multiple - with single -
+}
 function createEventFile(event: Event, folder: string): void {
-  fs.writeFileSync(`${folder}/${event.id.replaceAll("THB_", "").replaceAll("#", "_")}.json`, JSON.stringify({
+  const slug = slugify(event.id.replaceAll("THB_", "").replaceAll(" ", "-").replaceAll("#ev", "-"));
+  fs.writeFileSync(`${folder}/${slug}.json`, JSON.stringify({
     ...event,
-    id: event.id.replaceAll("THB_", "").replaceAll("#", "_"),
+    id: undefined,
+    slug,
   }, null, 2));
 }
 function makeFolder(folder: string): void {
