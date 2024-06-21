@@ -8,11 +8,12 @@ router.get("/search", async ({ env, req }) => {
     q: string;
     per_page: string;
     page: string;
+    textmatch: string;
   };
   if (!_.isString(q) || q.length < 1)
     throw new Error("q is not a string or is less than 1 characters");
 
   const gh = new GitHub(GITHUB_REPOSITORY);
-  const searchResults = await gh.search(q, Number.parseInt(page), Number.parseInt(per_page));
+  const searchResults = await gh.search(q, Number.parseInt(page), Number.parseInt(per_page), req.query.textmatch === "true");
   return serializeJSON(searchResults);
 });

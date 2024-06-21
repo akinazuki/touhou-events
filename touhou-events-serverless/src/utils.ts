@@ -171,7 +171,7 @@ export class GitHub {
     });
   }
 
-  public async search(query: string, page = 1, perPage = 10) {
+  public async search(query: string, page = 1, perPage = 10, withTextMatch = false) {
     // no escape for query
     const queryBuild = decodeURIComponent(new URLSearchParams({
       q: `${query}+in:file+language:json+repo:${this.repository}+fork:true`,
@@ -181,7 +181,7 @@ export class GitHub {
     const searchResult = await fetch(`https://api.github.com/search/code?${queryBuild}`, {
       headers: {
         ...defaultGitHubHeader,
-        Accept: "application/vnd.github.v3.text-match+json",
+        Accept: withTextMatch ? "application/vnd.github.v3.text-match+json" : defaultGitHubHeader.Accept,
       },
     }).then(r => r.json()).then((r: any) => {
       return {
@@ -195,12 +195,14 @@ export class GitHub {
         html_url: undefined,
         git_url: undefined,
         repository: i.repository.full_name,
-        text_matches: i.text_matches.map((m: any) => {
-          return {
-            fragment: m.fragment,
-            matches: m.matches,
-          };
-        }),
+        text_matches: withTextMatch
+          ? i.text_matches.map((m: any) => {
+            return {
+              fragment: m.fragment,
+              matches: m.matches,
+            };
+          })
+          : undefined,
       };
     });
     return {
