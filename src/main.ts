@@ -2,13 +2,21 @@ import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import "./style.css";
 import App from "./App.vue";
-import Event from "./components/Event.vue";
+import Events from "./components/Events.vue";
 import MaintainEvent from "./components/MaintainEvent.vue";
 
 const routes = [
+  // {
+  //   path: "/events",
+  //   component: Events,
+  // },
+  {
+    path: "/",
+    component: Events,
+  },
   {
     path: "/event/:id?",
-    component: Event,
+    component: Events,
   },
   {
     path: "/mnt-event/:id?",
