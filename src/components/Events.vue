@@ -28,8 +28,10 @@ async function onInfiniteLoading() {
   }, 1000);
 }
 onMounted(async () => {
-  syncEvents();
+  loading.value = true;
+  await syncEvents();
   const res = await fetchData();
+
   events.value.push(...res);
 });
 </script>
@@ -47,6 +49,6 @@ onMounted(async () => {
         少女{{ parseFloat(Math.random().toFixed(2)) > 0.8 ? "祈祷" : "折寿" }}中...
       </p>
     </div>
-    <InfiniteLoading @infinite="onInfiniteLoading" />
+    <InfiniteLoading v-if="events.length > 0" @infinite="onInfiniteLoading" />
   </div>
 </template>
