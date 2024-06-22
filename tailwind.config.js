@@ -1,24 +1,26 @@
-const animate = require("tailwindcss-animate")
+const animate = require("tailwindcss-animate");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
   safelist: ["dark"],
   prefix: "",
-  
+
   content: [
-    './pages/**/*.{ts,tsx,vue}',
-    './components/**/*.{ts,tsx,vue}',
-    './app/**/*.{ts,tsx,vue}',
-    './src/**/*.{ts,tsx,vue}',
-	],
-  
+    "./pages/**/*.{ts,tsx,vue}",
+    "./components/**/*.{ts,tsx,vue}",
+    "./app/**/*.{ts,tsx,vue}",
+    "./src/**/*.{ts,tsx,vue}",
+  ],
+
   theme: {
     container: {
       center: true,
       padding: "2rem",
       screens: {
         "2xl": "1400px",
+        "3xl": "1600px",
+        "4xl": "1800px",
       },
     },
     extend: {
@@ -74,10 +76,10 @@ module.exports = {
         },
         "collapsible-down": {
           from: { height: 0 },
-          to: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: "var(--radix-collapsible-content-height)" },
         },
         "collapsible-up": {
-          from: { height: 'var(--radix-collapsible-content-height)' },
+          from: { height: "var(--radix-collapsible-content-height)" },
           to: { height: 0 },
         },
       },
@@ -90,4 +92,4 @@ module.exports = {
     },
   },
   plugins: [animate],
-}
+};

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Placeholder from "@/components/Placeholder.vue";
+import Header from "@/components/Header.vue";
 
 const needMargin = ref(false);
 </script>
@@ -9,16 +10,7 @@ const needMargin = ref(false);
   <div class="flex flex-col ">
     <!-- <Placeholder message="Header" class="h-24 p-2" /> -->
     <div class="h-16 px-8 mt-1 items-center w-full flex">
-      <div class="flex items-baseline">
-        <span class="text-4xl text-title">東方活動記録</span>
-        <span class="text-lg text-muted-foreground ml-2">by
-          <a
-            href="https://touhou.works"
-            target="_blank"
-            class="text-gray-600 underline underline-offset-2"
-          >幻夢結社</a>
-        </span>
-      </div>
+      <Header />
     </div>
 
     <div class="flex px-6">

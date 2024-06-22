@@ -38,7 +38,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col">
-    <div class="grid grid-cols-3">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       <div v-for="event in events" :key="event.id">
         <EventCard :event="event" />
       </div>
