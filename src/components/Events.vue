@@ -91,7 +91,7 @@ onMounted(async () => {
     <div v-show="loading" class="fixed flex flex-row justify-center items-center h-48 gap-4 right-16 bottom-0">
       <Loading class="w-12 h-12 animate-spin border-red-500 border-2 rounded-full bg-white" />
       <p class="text-gray-600 text-xl">
-        少女{{ parseFloat(Math.random().toFixed(2)) > 0.8 ? "祈祷" : "折寿" }}中...
+        少女{{ parseFloat(Math.random().toFixed(2)) > 0.3 ? "祈祷" : "折寿" }}中...
       </p>
     </div>
     <div v-if="events.length === 0" class="flex flex-col items-center justify-center h-96">
