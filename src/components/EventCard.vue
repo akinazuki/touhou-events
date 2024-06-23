@@ -27,7 +27,9 @@ function calcDays(end: number, start: number): string {
     class="flex flex-col h-48 max-h-48 rounded border p-4 mr-2 my-2 border-gray-300 hover:shadow-md hover:border-gray-400 border-opacity-50 gap-2 justify-between"
   >
     <div class="w-full text-gray-800 font-bold line-clamp-2 text-sm">
-      <p>{{ event.title }}</p>
+      <p>
+        {{ event.title }}
+      </p>
     </div>
     <div class="w-full text-gray-600 text-xs flex items-center gap-1">
       <div class="w-4 flex items-center gap-1">

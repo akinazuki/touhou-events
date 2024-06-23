@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
 import { Input } from "@/components/ui/input";
+import SearchTagsSelector from "@/components/SearchTagsSelector.vue";
 
-const search = ref("");
 const maintainer = ref({
   avatarfull: "https://avatars.steamstatic.com/200167fbfcb68741d882a79de678e5ce8bac28b5_full.jpg",
   steamid: "76561198382909655",
@@ -19,8 +19,9 @@ const maintainer = ref({
         <a href="https://touhou.works" target="_blank" class="text-gray-600 underline underline-offset-2">幻夢結社</a>
       </span>
     </div>
-    <div class="flex flex-row w-1/3">
-      <Input v-model="search" placeholder="搜索" />
+    <div class="flex flex-row w-1/3 gap-2">
+      <!-- <Input v-model="search" class="h-10" placeholder="搜索" /> -->
+      <SearchTagsSelector class="h-10" />
     </div>
     <div class="flex flex-row items-center gap-2 w-1/3 justify-end">
       <div class="flex flex-row items-center gap-2">
