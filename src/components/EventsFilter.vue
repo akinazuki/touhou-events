@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { Check, ChevronsUpDown } from "lucide-vue-next";
 
+import { ElRadioButton, ElRadioGroup } from "element-plus";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,29 +20,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const frameworks = [
-  { value: "next.js", label: "Next.js" },
-  { value: "sveltekit", label: "SvelteKit" },
-  { value: "nuxt", label: "Nuxt" },
-  { value: "remix", label: "Remix" },
-  { value: "astro", label: "Astro" },
-];
-
-const open = ref(false);
-const value = ref("");
-const panelWidth = inject("leftPanelWidth") as Ref<number>;
-const panelWidthFinal = computed(() => {
-  return `calc(${panelWidth.value}px - 1rem)`;
+const emit = defineEmits(["filterSelected"]);
+const selected = ref("hot");
+// const panelWidth = inject("leftPanelWidth") as Ref<number>;
+// const panelWidthFinal = computed(() => {
+//   return `calc(${panelWidth.value}px - 1rem)`;
+// });
+const filterButtons = ref([
+  { label: "热门", value: "hot" },
+  { label: "最近", value: "future" },
+  { label: "时间倒序", value: "desc" },
+  { label: "时间顺序", value: "asc" },
+]);
+watch(filterButtons, () => {
+  document.documentElement.style.setProperty(
+    "--el-radio-button-group-length",
+    filterButtons.value.length.toString(),
+  );
+}, { immediate: true });
+watch(selected, () => {
+  emit("filterSelected", selected.value);
 });
 </script>
 
 <template>
   <div
-    :style="{
-      width: panelWidthFinal,
-    }"
+    class="flex flex-row items-center w-full"
   >
-    <Popover v-model:open="open">
+    <ElRadioGroup v-model="selected" class="filter-selector w-full">
+      <!-- <ElRadioButton label="热门" value="hot" />
+      <ElRadioButton label="最近的" value="future" />
+      <ElRadioButton label="时间倒序" value="desc" /> -->
+      <ElRadioButton
+        v-for="button in filterButtons" :key="button.value" :label="button.label" :value="button.value"
+      />
+    </ElRadioGroup>
+    <!-- <Popover v-model:open="open">
       <PopoverTrigger as-child>
         <div class="w-full">
           <Button variant="outline" role="combobox" :aria-expanded="open" class="w-full justify-between">
@@ -82,6 +96,15 @@ const panelWidthFinal = computed(() => {
           </CommandList>
         </Command>
       </PopoverContent>
-    </Popover>
+    </Popover> -->
   </div>
 </template>
+
+<style>
+.filter-selector .el-radio-button {
+  width: calc(100% / var(--el-radio-button-group-length,2)) !important;
+}
+.filter-selector .el-radio-button__inner {
+  width: 100% !important;
+}
+</style>

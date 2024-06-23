@@ -24,13 +24,15 @@ function calcDays(end: number, start: number): string {
 
 <template>
   <div
-    class="flex flex-col h-48 max-h-48 rounded border p-4 mr-2 my-2 border-gray-300 hover:shadow-md hover:border-gray-400 border-opacity-50 gap-2 justify-between"
+    class="flex flex-col h-44 max-h-44 rounded border p-4 mr-2 my-2 border-gray-300 hover:shadow-md hover:border-gray-400 border-opacity-50 gap-2 justify-around"
   >
-    <div class="w-full text-gray-800 font-bold line-clamp-2 text-sm">
-      <p>
-        {{ event.title }}
-      </p>
-    </div>
+    <router-link :to="`/event/${event.slug}`">
+      <div class="w-full text-gray-800 font-bold line-clamp-2 text-sm hover:underline hover:underline-offset-2 hover:cursor-pointer hover:text-blue-500">
+        <p>
+          {{ event.title }}
+        </p>
+      </div>
+    </router-link>
     <div class="w-full text-gray-600 text-xs flex items-center gap-1">
       <div class="w-4 flex items-center gap-1">
         <MapPin class="w-4 h-8" />
@@ -63,10 +65,8 @@ function calcDays(end: number, start: number): string {
         #{{ type }}
       </span>
     </div>
-    <div class="w-full flex">
-      <router-link :to="`/event/${event.slug}`">
-        <a class="text-blue-500 text-xs">Details</a>
-      </router-link>
-    </div>
+    <!-- <div class="w-full flex"> -->
+    <!-- <a class="text-blue-500 text-xs">Details</a> -->
+    <!-- </div> -->
   </div>
 </template>

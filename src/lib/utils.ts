@@ -75,12 +75,13 @@ export async function searchBy(condition: string[] | undefined, types: string[])
   await db.events.each((event) => {
     if (!condition)
       return;
-    if (condition.every(cond => event.title.toLocaleLowerCase().includes(cond) || event.desc.toLocaleLowerCase().includes(cond)))
+    if (
+      // the search result should match all conditions
+      (condition.every(cond => event.title.toLocaleLowerCase().includes(cond) || event.desc.toLocaleLowerCase().includes(cond))
+      && types.every(type => event.type.includes(type)))
+
+    )
       return results.push(event);
-    if (types.length) {
-      if (types.every(type => event.type.includes(type)))
-        results.push(event);
-    }
   });
   console.log(`searchBy took ${Date.now() - time}ms`);
   return scoreSearchResult(results, condition, types);

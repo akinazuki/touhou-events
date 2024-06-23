@@ -37,11 +37,21 @@ export const useSearchStore = defineStore("search", () => {
     };
   });
 
+  function addTag(tag: string) {
+    if (!selected.value.includes(tag))
+      selected.value.push(tag);
+  }
+  function removeTag(tag: string) {
+    selected.value = selected.value.filter(item => item !== tag);
+  }
+
   return {
     tagsTypes,
     tagsList,
     selected,
     selectors,
     init,
+    addTag,
+    removeTag,
   };
 });

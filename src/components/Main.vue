@@ -31,8 +31,6 @@ provide("leftPanelWidth", leftPanelWidth);
       <div ref="leftPanel" class="w-[20%] p-2 flex flex-col">
         <Placeholder message="Announcements" class="h-[20%] w-full p-2" />
         <!-- <Placeholder message="Sidebar" class="h-[80%] w-full p-2" /> -->
-
-        <!-- <EventsFilter class="h-[80%] w-full" /> -->
       </div>
       <div
         :class="{
