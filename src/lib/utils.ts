@@ -72,6 +72,7 @@ export async function getTypes() {
 export async function searchBy(condition: string[] | undefined, types: string[]) {
   const time = Date.now();
   const results = [] as Event[];
+
   await db.events.each((event) => {
     if (!condition)
       return;

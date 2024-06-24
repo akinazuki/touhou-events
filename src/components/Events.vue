@@ -18,7 +18,7 @@ const events = ref<Event[]>([]);
 
 const searchResultEvents = ref<Event[]>([]);
 const searchResultEventsPaged = ref<Event[][]>([]);
-const searchResultEventsCount = ref(0);
+const searchResultEventsCount = computed(() => searchResultEvents.value.length);
 const loading = ref(false);
 const sortBy = ref("asc");
 
@@ -31,31 +31,33 @@ watch(selectors, async (value) => {
   if (value.input.length > 0 || value.tags.length > 0) {
     loading.value = true;
     console.log(`Searching by ${selectors.value.input} and ${selectors.value.tags}`);
-    await doSearch(sortBy.value);
+    const result = await doSearch(sortBy.value);
 
     loading.value = false;
   }
 });
+
 async function doSearch(sortBy = "asc") {
-  searchResultEvents.value = [];
-  searchResultEventsPaged.value = [];
-  const res = await searchBy(selectors.value.input, selectors.value.tags);
+  // searchResultEvents.value = [];
+  // searchResultEventsPaged.value = [];
+  let res = await searchBy(selectors.value.input, selectors.value.tags);
   console.log(`Search result: ${res.length}`);
 
-  searchResultEvents.value = res.sort((a, b) => {
+  res = res.sort((a, b) => {
     if (sortBy === "asc")
       return a.start - b.start;
 
     else
       return b.start - a.start;
   });
-  searchResultEventsPaged.value = _.chunk(res, pageSize.value);
-  searchResultEventsCount.value = res.length;
-  if (searchResultEventsPaged.value.length > 0)
-    events.value.push(...searchResultEventsPaged.value[0]);
+  return res;
+  // events.value = deepCopy(searchResultEvents.value);
+  // searchResultEventsPaged.value = _.chunk(res, pageSize.value);
+  // if (searchResultEventsPaged.value.length > 0)
+  //   events.value.push(...searchResultEventsPaged.value[page.value - 1]);
 }
 
-async function fetchData(order?: string) {
+async function fetchDefaultData(order?: string, page = 1, pageSize = 12) {
   const today = Math.floor(new Date().getTime() / 1000);
   const handler = db.events.where("start").aboveOrEqual(today);
   switch (order) {
@@ -69,20 +71,14 @@ async function fetchData(order?: string) {
       handler.sortBy("start");
       break;
   }
-  const res = await handler.offset((page.value - 1) * pageSize.value).limit(pageSize.value).toArray();
+  const res = await handler.offset((page - 1) * pageSize).limit(pageSize).toArray();
   console.log(res);
   return res;
 }
 
 function onFilterSelected(value: string) {
-  page.value = 1;
-  events.value = [];
-  if (searching.value)
-    doSearch(value);
-
+  console.log(`Filter selected: ${value}`);
   sortBy.value = value;
-
-  onInfiniteLoading(value);
 }
 
 async function onInfiniteLoading(sortValue?: string) {
@@ -90,27 +86,28 @@ async function onInfiniteLoading(sortValue?: string) {
   loading.value = true;
   if (!searching.value) {
     setTimeout(async () => {
-      const res = await fetchData(sortValue);
+      const res = await fetchDefaultData(sortValue, page.value, pageSize.value);
       events.value.push(...res);
       loading.value = false;
     }, 1000);
   }
   else {
-    setTimeout(() => {
-      if (searchResultEventsPaged.value.length > page.value) {
-        events.value.push(...searchResultEventsPaged.value[page.value - 1]);
-        loading.value = false;
-      }
-      else {
-        loading.value = false;
-      }
-    }, 1000);
+
+    // setTimeout(() => {
+    //   if (searchResultEventsPaged.value.length > page.value) {
+    //     events.value.push(...searchResultEventsPaged.value[page.value - 1]);
+    //     loading.value = false;
+    //   }
+    //   else {
+    //     loading.value = false;
+    //   }
+    // }, 1000);
   }
 }
 onMounted(async () => {
   loading.value = true;
   await syncEvents();
-  const res = await fetchData();
+  const res = await fetchDefaultData();
 
   events.value.push(...res);
 });
