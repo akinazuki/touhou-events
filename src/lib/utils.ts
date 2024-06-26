@@ -70,6 +70,7 @@ export async function getTypes() {
 }
 
 export async function searchBy(condition: string[] | undefined, types: string[]) {
+  console.log("searchBy", condition, types);
   const time = Date.now();
   const results = [] as Event[];
 

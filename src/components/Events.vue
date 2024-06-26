@@ -16,9 +16,7 @@ const page = ref(1);
 const pageSize = ref(12);
 const events = ref<Event[]>([]);
 
-const searchResultEvents = ref<Event[]>([]);
-const searchResultEventsPaged = ref<Event[][]>([]);
-const searchResultEventsCount = computed(() => searchResultEvents.value.length);
+const searchResultEventsCount = computed(() => events.value.length);
 const loading = ref(false);
 const sortBy = ref("asc");
 
@@ -32,7 +30,7 @@ watch(selectors, async (value) => {
     loading.value = true;
     console.log(`Searching by ${selectors.value.input} and ${selectors.value.tags}`);
     const result = await doSearch(sortBy.value);
-
+    events.value = deepCopy(result);
     loading.value = false;
   }
 });
@@ -40,16 +38,17 @@ watch(selectors, async (value) => {
 async function doSearch(sortBy = "asc") {
   // searchResultEvents.value = [];
   // searchResultEventsPaged.value = [];
-  let res = await searchBy(selectors.value.input, selectors.value.tags);
+  const res = await searchBy(selectors.value.input, selectors.value.tags).then((res) => {
+    return res.sort((a, b) => {
+      if (sortBy === "asc")
+        return b.start - a.start;
+
+      else
+        return a.start - b.start;
+    });
+  });
   console.log(`Search result: ${res.length}`);
 
-  res = res.sort((a, b) => {
-    if (sortBy === "asc")
-      return a.start - b.start;
-
-    else
-      return b.start - a.start;
-  });
   return res;
   // events.value = deepCopy(searchResultEvents.value);
   // searchResultEventsPaged.value = _.chunk(res, pageSize.value);
@@ -58,6 +57,7 @@ async function doSearch(sortBy = "asc") {
 }
 
 async function fetchDefaultData(order?: string, page = 1, pageSize = 12) {
+  console.log(`Fetching default data with order: ${order}, page: ${page}, pageSize: ${pageSize}`);
   const today = Math.floor(new Date().getTime() / 1000);
   const handler = db.events.where("start").aboveOrEqual(today);
   switch (order) {
@@ -81,28 +81,42 @@ function onFilterSelected(value: string) {
   sortBy.value = value;
 }
 
-async function onInfiniteLoading(sortValue?: string) {
-  page.value++;
-  loading.value = true;
+watch(sortBy, async (value) => {
+  console.log(`Sorting by ${value}`);
+  page.value = 1;
+  events.value = [];
   if (!searching.value) {
+    const res = await fetchDefaultData(value);
+    events.value = deepCopy(res);
+  }
+  else {
+    loading.value = true;
+    const res = await doSearch(value);
+    events.value = deepCopy(res);
+    loading.value = false;
+  }
+});
+
+async function onInfiniteLoading() {
+  if (!searching.value) {
+    page.value++;
+    console.log(`Infinite loading, current page: ${page.value}`);
+    console.log(`searching type: ${searching.value ? "searching" : "not searching"}`);
+    loading.value = true;
     setTimeout(async () => {
-      const res = await fetchDefaultData(sortValue, page.value, pageSize.value);
+      const res = await fetchDefaultData(sortBy.value, page.value, pageSize.value);
       events.value.push(...res);
       loading.value = false;
     }, 1000);
   }
-  else {
+  // else {
+  //   setTimeout(async () => {
+  //     const res = await doSearch(sortBy.value);
+  //     events.value = deepCopy(res);
 
-    // setTimeout(() => {
-    //   if (searchResultEventsPaged.value.length > page.value) {
-    //     events.value.push(...searchResultEventsPaged.value[page.value - 1]);
-    //     loading.value = false;
-    //   }
-    //   else {
-    //     loading.value = false;
-    //   }
-    // }, 1000);
-  }
+  //     loading.value = false;
+  //   }, 1000);
+  // }
 }
 onMounted(async () => {
   loading.value = true;
