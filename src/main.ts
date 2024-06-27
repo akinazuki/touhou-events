@@ -5,6 +5,7 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import Events from "./components/Events.vue";
 import MaintainEvent from "./components/MaintainEvent.vue";
+import EventDetail from "./components/EventDetail.vue";
 
 const routes = [
   // {
@@ -16,11 +17,11 @@ const routes = [
     component: Events,
   },
   {
-    path: "/event/:id?",
-    component: Events,
+    path: "/event/:slug?",
+    component: EventDetail,
   },
   {
-    path: "/mnt-event/:id?",
+    path: "/mnt-event/:slug?",
     component: MaintainEvent,
   },
 ];

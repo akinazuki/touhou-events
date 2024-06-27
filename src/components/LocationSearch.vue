@@ -49,10 +49,13 @@ async function searchLocation(location: string): Promise<any[]> {
 const open = ref(false);
 const searchLocationText = ref("");
 const displayLocationText = ref("");
+const displayLocationID = ref("");
 const selectedEntity = ref<LocationEntity | null>(null);
 onMounted(() => {
-  if (locationEntities.value.length === 1)
+  if (locationEntities.value.length === 1) {
     displayLocationText.value = locationEntities.value[0].addressLine1;
+    displayLocationID.value = locationEntities.value[0].id;
+  }
 });
 watchDebounced(searchLocationText, async (newValue) => {
   console.log(`Searching location: ${newValue}`);
@@ -68,6 +71,7 @@ function locationSelected(entity: LocationEntity): void {
   console.log(`Selected location: ${entity.addressLine1}`, entity);
   selectedEntity.value = entity;
   displayLocationText.value = entity.addressLine1;
+  displayLocationID.value = entity.id;
   emit("update:locationEntitySelected", entity);
 }
 </script>
@@ -106,7 +110,7 @@ function locationSelected(entity: LocationEntity): void {
                     <Check
                       :class="cn(
                         'ml-2 h-4 w-4',
-                        displayLocationText === entity.addressLine1 ? 'opacity-100' : 'opacity-0',
+                        displayLocationID === entity.id ? 'opacity-100' : 'opacity-0',
                       )"
                     />
                   </CommandItem>

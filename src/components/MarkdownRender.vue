@@ -5,10 +5,13 @@ import DOMPurify from "dompurify";
 
 const props = defineProps<{
   content: string;
+  height?: string;
 }>();
 
+const containerHeight = computed(() => props.height || "24rem");
+
 const compiledMarkdownHTML = computed(() => {
-  const html = marked.parse(props.content, {
+  const html = marked.parse(props.content || "", {
     async: false,
     breaks: false,
     extensions: null,
@@ -24,7 +27,11 @@ const compiledMarkdownHTML = computed(() => {
 </script>
 
 <template>
-  <div class="markdown h-[24rem] max-h-[24rem] overflow-y-scroll rounded p-4" v-html="compiledMarkdownHTML" />
+  <div
+    :style="{
+      height: containerHeight,
+    }" class="markdown max-h-[24rem] overflow-y-scroll rounded p-4" v-html="compiledMarkdownHTML"
+  />
 </template>
 
 <style>

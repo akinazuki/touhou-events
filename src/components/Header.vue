@@ -14,7 +14,9 @@ const maintainer = ref({
 <template>
   <div class="flex flex-row w-full justify-between">
     <div class="flex flex-row items-baseline gap-1 w-1/3">
-      <span class="text-4xl text-title">東方活動記録</span>
+      <router-link to="/">
+        <span class="text-4xl text-title">東方活動記録</span>
+      </router-link>
       <span class="text-lg text-muted-foreground ml-2">by
         <a href="https://touhou.works" target="_blank" class="text-gray-600 underline underline-offset-2">幻夢結社</a>
       </span>

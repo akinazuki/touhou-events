@@ -1,16 +1,15 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
-import { watchDebounced } from "@vueuse/core";
+import { computedAsync, watchDebounced } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
-import eventsFinal from "../server/eventsFinal.json";
 import type { Event, LocationEntity } from "../server/src/Event";
 import MarkdownRender from "./MarkdownRender.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { deepCopy } from "@/lib/utils";
+import { deepCopy, getEventBySlug } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import LocationSearch from "@/components/LocationSearch.vue";
 import TabSwitch from "@/components/TabSwitch.vue";
@@ -23,10 +22,15 @@ import DescriptionEditor from "@/components/DescriptionEditor.vue";
 const router = useRouter();
 const route = useRoute();
 
-const hasEvts = ref(eventsFinal as Event[]);
-const routeParamsEvtId = computed(() => Number.parseInt(route.params.id as string) || 0);
-const evtId = ref(routeParamsEvtId.value);
-const event = computed(() => hasEvts.value[evtId.value]);
+const routeParamsSlug = computed(() => route.params.slug as string);
+const eventSlug = ref(routeParamsSlug.value);
+const isNewEvent = computed(() => route.path === "/new-event");
+const event = computedAsync(async () => {
+  const evt = await getEventBySlug(eventSlug.value);
+  if (!evt)
+    throw new Error("Event not found");
+  return evt;
+});
 const selectedEntity = ref<LocationEntity | undefined>(undefined);
 
 const finalEvent = computed(() => {
@@ -53,15 +57,14 @@ function datePicked(date: { start: number; end: number }) {
   event.value.start = date.start;
   event.value.end = date.end;
 }
-
-function nextEvent() {
-  window.location.href = `/mnt-event/${evtId.value + 1}`;
-}
 </script>
 
 <template>
   <div class="p-4 flex flex-col gap-2">
-    <b>活动事件 [ {{ evtId }} ] , 共 {{ hasEvts.length }} 个活动</b>
+    <div class="flex flex-col gap-2 w-full">
+      <label for="title" class="text-sm">活动 Slug</label>
+      <Input v-model="event.slug" type="text" :disabled="!isNewEvent" />
+    </div>
 
     <div class="grid grid-cols-2 gap-4 justify-between">
       <div class="flex flex-col gap-2 w-full">
@@ -110,9 +113,9 @@ function nextEvent() {
       <Button class="bg-green-500 text-white hover:bg-green-500/90" @click="saveEvent">
         Save
       </Button>
-      <Button @click="nextEvent">
+      <!-- <Button @click="nextEvent">
         Next
-      </Button>
+      </Button> -->
     </div>
   </div>
 </template>

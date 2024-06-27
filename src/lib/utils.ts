@@ -88,6 +88,9 @@ export async function searchBy(condition: string[] | undefined, types: string[])
   console.log(`searchBy took ${Date.now() - time}ms`);
   return scoreSearchResult(results, condition, types);
 }
+export function getEventBySlug(slug: string) {
+  return db.events.get({ slug });
+}
 export function scoreSearchResult(searchResult: Event[], condition: string[] | undefined, types: string[]) {
   return searchResult.map((event) => {
     return {
