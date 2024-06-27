@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
+import { userUserStore } from "./stores/maintainer";
 import { Input } from "@/components/ui/input";
 import SearchTagsSelector from "@/components/SearchTagsSelector.vue";
 
-const maintainer = ref({
-  avatarfull: "https://avatars.steamstatic.com/200167fbfcb68741d882a79de678e5ce8bac28b5_full.jpg",
-  steamid: "76561198382909655",
-  personaname: "秋 奈月",
-  loccountrycode: "JP",
-});
+const { maintainer, defaultAvatar } = userUserStore();
 </script>
 
 <template>
@@ -27,10 +23,12 @@ const maintainer = ref({
     </div>
     <div class="flex flex-row items-center gap-2 w-1/3 justify-end">
       <div class="flex flex-row items-center gap-2">
-        <img
-          :src="maintainer.avatarfull"
-          class="w-8 h-8 rounded-full hover:text-gray-600 hover:cursor-pointer shadow-md hover:shadow-lg"
-        >
+        <router-link to="/login">
+          <img
+            :src="maintainer?.avatarfull || defaultAvatar"
+            class="w-8 h-8 rounded-full hover:text-gray-600 hover:cursor-pointer shadow-md hover:shadow-lg"
+          >
+        </router-link>
       </div>
     </div>
   </div>

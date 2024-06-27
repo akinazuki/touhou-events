@@ -2,10 +2,11 @@ import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import "./style.css";
 import { createPinia } from "pinia";
-import App from "./App.vue";
-import Events from "./components/Events.vue";
-import MaintainEvent from "./components/MaintainEvent.vue";
-import EventDetail from "./components/EventDetail.vue";
+import App from "@/App.vue";
+import Events from "@/components/Events.vue";
+import MaintainEvent from "@/components/MaintainEvent.vue";
+import EventDetail from "@/components/EventDetail.vue";
+import LoginPage from "@/components/LoginPage.vue";
 
 const routes = [
   // {
@@ -15,6 +16,10 @@ const routes = [
   {
     path: "/",
     component: Events,
+  },
+  {
+    path: "/login",
+    component: LoginPage,
   },
   {
     path: "/event/:slug?",
