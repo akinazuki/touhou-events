@@ -16,7 +16,7 @@ export const userUserStore = defineStore("user", () => {
 
     const b64Data = userJWT.value.split(".")[1];
     const userData = JSON.parse(atob(b64Data));
-    return userData;
+    return userData.payload;
   });
   return {
     maintainer,
