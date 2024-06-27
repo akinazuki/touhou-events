@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* body {
   scroll-behavior: smooth;
   background-image: linear-gradient(to right, #e3eeff, #f3e7e9);
-}
+} */
 
 .text-title {
-  background-image: linear-gradient(to right, pink, purple);
+  background-image: linear-gradient(to right, purple, #dd6d8d);
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
