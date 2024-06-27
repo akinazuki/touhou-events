@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 // import Events from "../server/events.json";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import InfiniteLoading from "v3-infinite-loading";
 import { storeToRefs } from "pinia";
 import _ from "lodash";
+import { useRoute, useRouter } from "vue-router";
 import type { Event } from "../lib/database";
 import { db } from "../lib/database";
 import EventCard from "./EventCard.vue";
@@ -12,23 +13,34 @@ import { useSearchStore } from "./stores/search";
 import EventsFilter from "./EventsFilter.vue";
 import { deepCopy, searchBy, syncEvents } from "@/lib/utils";
 
+const router = useRouter();
+const route = useRoute();
+
 const page = ref(1);
 const pageSize = ref(12);
 const events = ref<Event[]>([]);
+const searchStore = useSearchStore();
+const { searchInput } = storeToRefs(searchStore);
 
 const searchResultEventsCount = computed(() => events.value.length);
 const loading = ref(false);
-const sortBy = ref("asc");
 
-const searchStore = useSearchStore();
-const { selectors } = storeToRefs(searchStore);
+const searching = computed(() => !(searchInput.value.input.length === 0 && searchInput.value.tags.length === 0));
 
-const searching = computed(() => !(selectors.value.input.length === 0 && selectors.value.tags.length === 0));
+const sortBy = computed({
+  get: () => {
+    return route.query.sortBy as string || "asc";
+  },
+  set: (value: string) => {
+    router.push({ query: { sortBy: value } });
+  },
+});
 
-watch(selectors, async (value) => {
+watch(searchInput, async (value) => {
+  console.log(`Search input changed: ${value.input} and ${value.tags}`);
   if (value.input.length > 0 || value.tags.length > 0) {
     loading.value = true;
-    console.log(`Searching by ${selectors.value.input} and ${selectors.value.tags}`);
+    console.log(`Searching by ${searchInput.value.input} and ${searchInput.value.tags}`);
     const result = await doSearch(sortBy.value);
     events.value = deepCopy(result);
     loading.value = false;
@@ -38,7 +50,7 @@ watch(selectors, async (value) => {
 async function doSearch(sortBy = "asc") {
   // searchResultEvents.value = [];
   // searchResultEventsPaged.value = [];
-  const res = await searchBy(selectors.value.input, selectors.value.tags).then((res) => {
+  const res = await searchBy(searchInput.value.input, searchInput.value.tags).then((res) => {
     return res.sort((a, b) => {
       if (sortBy === "asc")
         return b.start - a.start;
@@ -121,8 +133,8 @@ async function onInfiniteLoading() {
 onMounted(async () => {
   loading.value = true;
   await syncEvents();
-  const res = await fetchDefaultData();
-
+  console.log("Fetching default data via onMounted");
+  const res = await fetchDefaultData(sortBy.value);
   events.value.push(...res);
 });
 </script>
@@ -130,7 +142,7 @@ onMounted(async () => {
 <template>
   <div class="flex flex-col">
     <div class="flex flex-row items-center gap-2 mb-2">
-      <EventsFilter class="w-[40%]" @filter-selected="onFilterSelected" />
+      <EventsFilter class="w-[24rem]" :initial-value="sortBy" @filter-selected="onFilterSelected" />
       <p class="text-gray-600 text-xs font-bold">
         {{ searching ? `搜索到 ${searchResultEventsCount} 个活动` : '' }}
       </p>

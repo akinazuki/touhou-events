@@ -24,9 +24,9 @@ export const useSearchStore = defineStore("search", () => {
       return { value: item.value, label: item.label };
     });
   });
-  const selected = ref([]);
+  const selected = ref([] as string[]);
 
-  const selectors = computed(() => {
+  const searchInput = computed(() => {
     return {
       input: selected.value.filter((item) => {
         return !tagsTypes.value.map(type => type.value).includes(item);
@@ -37,6 +37,10 @@ export const useSearchStore = defineStore("search", () => {
     };
   });
 
+  function addTags(tags: string[]) {
+    console.log(`addTags`, tags);
+    selected.value = [...new Set([...selected.value, ...tags])];
+  }
   function addTag(tag: string) {
     if (!selected.value.includes(tag))
       selected.value.push(tag);
@@ -49,9 +53,10 @@ export const useSearchStore = defineStore("search", () => {
     tagsTypes,
     tagsList,
     selected,
-    selectors,
+    searchInput,
     init,
     addTag,
+    addTags,
     removeTag,
   };
 });

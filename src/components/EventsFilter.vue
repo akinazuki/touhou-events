@@ -20,8 +20,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+const props = defineProps<{
+  initialValue: string;
+}>();
+
 const emit = defineEmits(["filterSelected"]);
-const selected = ref("hot");
+const selected = ref(props.initialValue);
 // const panelWidth = inject("leftPanelWidth") as Ref<number>;
 // const panelWidthFinal = computed(() => {
 //   return `calc(${panelWidth.value}px - 1rem)`;
