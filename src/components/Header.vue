@@ -17,10 +17,9 @@ const { maintainer, defaultAvatar } = userUserStore();
         <a href="https://touhou.works" target="_blank" class="text-gray-600">幻夢結社</a>
       </span>
     </div>
-    <div class="flex flex-row w-1/3 gap-2">
-      <!-- <Input v-model="search" class="h-10" placeholder="搜索" /> -->
+    <!-- <div class="flex flex-row w-1/3 gap-2">
       <SearchTagsSelector class="h-10" />
-    </div>
+    </div> -->
     <div class="flex flex-row items-center gap-2 w-1/3 justify-end">
       <div class="flex flex-row items-center gap-2">
         <router-link to="/login">

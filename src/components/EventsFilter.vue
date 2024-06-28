@@ -49,7 +49,7 @@ watch(selected, () => {
 
 <template>
   <div
-    class="flex flex-row items-center w-full"
+    class="flex flex-row items-center grow"
   >
     <ElRadioGroup v-model="selected" class="filter-selector w-full">
       <!-- <ElRadioButton label="热门" value="hot" />

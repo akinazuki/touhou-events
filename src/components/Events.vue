@@ -7,10 +7,11 @@ import _ from "lodash";
 import { useRoute, useRouter } from "vue-router";
 import type { Event } from "../lib/database";
 import { db } from "../lib/database";
-import EventCard from "./EventCard.vue";
 import Loading from "./Loading.vue";
 import { useSearchStore } from "./stores/search";
-import EventsFilter from "./EventsFilter.vue";
+import EventCard from "@/components/EventCard.vue";
+import EventsFilter from "@/components/EventsFilter.vue";
+import SearchTagsSelector from "@/components/SearchTagsSelector.vue";
 import { deepCopy, searchBy, syncEvents } from "@/lib/utils";
 
 const router = useRouter();
@@ -141,8 +142,9 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col">
-    <div class="flex flex-row items-center gap-2 mb-2">
-      <EventsFilter class="w-[24rem]" :initial-value="sortBy" @filter-selected="onFilterSelected" />
+    <div class="flex flex-row items-center gap-2 my-2 h-8 xl:max-w-[70%] max-w-[90%]">
+      <SearchTagsSelector class="w-32" />
+      <EventsFilter class="w-full" :initial-value="sortBy" @filter-selected="onFilterSelected" />
       <p class="text-gray-600 text-xs font-bold">
         {{ searching ? `搜索到 ${searchResultEventsCount} 个活动` : '' }}
       </p>
