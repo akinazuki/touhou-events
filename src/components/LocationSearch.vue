@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { LocationEntity } from "@/server/src/Event";
+import type { LocationEntity } from "@/lib/database";
 
 const props = defineProps<{
   locationEntity?: LocationEntity[];
@@ -86,14 +86,14 @@ function locationSelected(entity: LocationEntity): void {
               <span class="truncate">
                 {{ displayLocationText
                   ? displayLocationText
-                  : "选择位置" }}
+                  : "选择 Poi 位置" }}
               </span>
               <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent class="w-fit p-0">
             <Command>
-              <CommandInput class="h-9" placeholder="搜索位置..." :oninput="valueChanged" />
+              <CommandInput class="h-9" placeholder="搜索 Poi 位置..." :oninput="valueChanged" />
               <CommandEmpty>
                 {{ searchLocationText !== '' ? `找不到位置 「　${searchLocationText}　」` : '请输入位置以搜索' }}
               </CommandEmpty>

@@ -1,30 +1,33 @@
 import type { EntityTable } from "dexie";
 import Dexie from "dexie";
 
-interface Event {
+export interface Event {
   id?: number;
   title: string;
+  onlineEvent: boolean;
   start: number;
   end: number;
-  location: {
-    entity: {
-      addressLine1: string;
-      addressLine2: string;
-      categories: string[];
-      id: string;
-      provider: string;
-    }[];
-    text: string;
-    type: string;
-
-  };
-  platform: number;
+  location: EventLocation;
   type: string[];
   uniqueId: string;
   url: string;
   color: string;
   desc: string;
   slug: string;
+}
+
+export interface LocationEntity {
+  addressLine1?: string;
+  addressLine2?: string;
+  categories?: string[];
+  id?: string;
+  provider?: string;
+}
+
+export interface EventLocation {
+  text: string;
+  desc?: string;
+  entity?: LocationEntity[];
 }
 
 const db = new Dexie("TEA") as Dexie & {

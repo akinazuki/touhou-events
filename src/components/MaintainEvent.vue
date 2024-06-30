@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { computedAsync, watchDebounced } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
-import type { Event, LocationEntity } from "../server/src/Event";
+import { ElCheckbox } from "element-plus";
 import MarkdownRender from "./MarkdownRender.vue";
+import type { Event, LocationEntity } from "@/lib/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -25,17 +26,42 @@ const route = useRoute();
 const routeParamsSlug = computed(() => route.params.slug as string);
 const eventSlug = ref(routeParamsSlug.value);
 const isNewEvent = computed(() => route.path === "/new-event");
-const event = computedAsync(async () => {
+
+const event = ref<Event>({
+  uniqueId: "",
+  title: "",
+  desc: "",
+  color: "",
+  start: Math.floor(Date.now() / 1000),
+  end: Math.floor(Date.now() / 1000),
+  type: [],
+  url: "",
+  location: {
+    text: "",
+    entity: [],
+  },
+  onlineEvent: false,
+  slug: "",
+});
+const uniqueId = computedAsync(async () => {
+  return await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(`TOUHOU_EVENTS_${event.value.title}_${event.value.start}_${event.value.end}`)).then((buf) => {
+    return Array.prototype.map.call(new Uint8Array(buf), x => (`00${x.toString(16)}`).slice(-2)).join("");
+  });
+});
+watch(uniqueId, (value) => {
+  event.value.uniqueId = value;
+});
+onMounted(async () => {
   const evt = await getEventBySlug(eventSlug.value);
   if (!evt)
     throw new Error("Event not found");
-  return evt;
+  event.value = evt;
 });
 const selectedEntity = ref<LocationEntity | undefined>(undefined);
 
 const finalEvent = computed(() => {
   try {
-    const oldEventCopy = JSON.parse(JSON.stringify(event.value));
+    const oldEventCopy = deepCopy(event.value);
     if (selectedEntity.value === undefined)
       return oldEventCopy;
     oldEventCopy.location.entity = [deepCopy(selectedEntity.value)];
@@ -57,6 +83,18 @@ function datePicked(date: { start: number; end: number }) {
   event.value.start = date.start;
   event.value.end = date.end;
 }
+const isOnlineEvent = computed({
+  get: () => {
+    console.log("isOnlineEvent: ", event.value.onlineEvent);
+    return event.value.onlineEvent;
+  },
+  set: (value: boolean) => {
+    console.log("isOnlineEvent set: ", value);
+    event.value.onlineEvent = value;
+    event.value.location.text = "";
+    event.value.location.entity = [];
+  },
+});
 </script>
 
 <template>
@@ -82,10 +120,16 @@ function datePicked(date: { start: number; end: number }) {
     <DatePicker :date="{ start: event.start, end: event.end }" @update:date="datePicked" />
     <div class="flex flex-col gap-2">
       <label for="location" class="text-sm">地点</label>
-      <LocationSearch
-        :location-entity="event.location?.entity"
-        @update:location-entity-selected="locationEntitySelected"
-      />
+      <ElCheckbox v-model="isOnlineEvent" label="线上活动" />
+      <div v-show="!isOnlineEvent" class="flex flex-row gap-1">
+        <Input v-model="event.location.text" class="w-[50%]" type="text" placeholder="地点" />
+        <LocationSearch
+          v-if="event.location.text"
+          class="w-[50%]"
+          :location-entity="event.location?.entity"
+          @update:location-entity-selected="locationEntitySelected"
+        />
+      </div>
     </div>
     <div class="flex flex-col gap-2">
       <label for="description" class="text-sm">描述</label>
