@@ -6,9 +6,11 @@ import DOMPurify from "dompurify";
 const props = defineProps<{
   content: string;
   height?: string;
+  maxHeight?: string;
 }>();
 
 const containerHeight = computed(() => props.height || "24rem");
+const containerMaxHeight = computed(() => props.maxHeight || "24rem");
 
 const compiledMarkdownHTML = computed(() => {
   const html = marked.parse(props.content || "", {
@@ -30,7 +32,8 @@ const compiledMarkdownHTML = computed(() => {
   <div
     :style="{
       height: containerHeight,
-    }" class="markdown max-h-[24rem] overflow-y-scroll rounded p-4" v-html="compiledMarkdownHTML"
+      maxHeight: containerMaxHeight,
+    }" class="markdown overflow-y-scroll rounded p-4" v-html="compiledMarkdownHTML"
   />
 </template>
 

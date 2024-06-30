@@ -142,11 +142,11 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col">
-    <div class="flex flex-row items-center gap-2 my-2 h-8 xl:max-w-[70%] max-w-[90%]">
-      <SearchTagsSelector class="w-32" />
-      <EventsFilter class="w-full" :initial-value="sortBy" @filter-selected="onFilterSelected" />
-      <p class="text-gray-600 text-xs font-bold">
-        {{ searching ? `搜索到 ${searchResultEventsCount} 个活动` : '' }}
+    <div class="flex flex-row items-center gap-1 my-2 h-8 xl:max-w-[70%] max-w-[90%]">
+      <SearchTagsSelector class="2xl:w-[40%] xl:w-[60%] md:w-[70%]" />
+      <EventsFilter class="w-[8rem]" :initial-value="sortBy" @filter-selected="onFilterSelected" />
+      <p class="text-gray-600 text-xs font-bold line-clamp-1 w-[10rem] ml-2">
+        {{ searching ? `${searchResultEventsCount} 个活动` : '' }}
       </p>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-[96%]">
@@ -160,7 +160,7 @@ onMounted(async () => {
         少女{{ parseFloat(Math.random().toFixed(2)) > 0.3 ? "祈祷" : "折寿" }}中...
       </p>
     </div>
-    <div v-if="events.length === 0 && !loading" class="flex flex-col items-center justify-center h-96">
+    <div v-if="events.length === 0 && !loading" class="flex flex-col items-center justify-center h-96 mt-32">
       <img src="https://cdn.sa.net/2024/06/23/HGaDtOfh86wXCKx.jpg" alt="404">
       <p class="text-gray-600 text-xl">
         什么都没有找到...

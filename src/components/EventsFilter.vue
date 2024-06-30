@@ -3,7 +3,8 @@ import type { Ref } from "vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { Check, ChevronsUpDown } from "lucide-vue-next";
 
-import { ElRadioButton, ElRadioGroup } from "element-plus";
+import { ElOption, ElRadioButton, ElRadioGroup, ElSelect } from "element-plus";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,18 +49,15 @@ watch(selected, () => {
 </script>
 
 <template>
-  <div
-    class="flex flex-row items-center grow"
-  >
-    <ElRadioGroup v-model="selected" class="filter-selector w-full">
-      <!-- <ElRadioButton label="热门" value="hot" />
-      <ElRadioButton label="最近的" value="future" />
-      <ElRadioButton label="时间倒序" value="desc" /> -->
-      <ElRadioButton
-        v-for="button in filterButtons" :key="button.value" :label="button.label" :value="button.value"
-      />
-    </ElRadioGroup>
-    <!-- <Popover v-model:open="open">
+  <div class="flex flex-row items-center">
+    <ElSelect v-model="selected" placeholder="排序" size="large">
+      <ElOption v-for="item in filterButtons" :key="item.value" :label="item.label" :value="item.value" />
+    </ElSelect>
+    <!-- <ElRadioGroup v-model="selected" class="filter-selector w-full">
+      <ElRadioButton v-for="button in filterButtons" :key="button.value" :label="button.label" :value="button.value" />
+    </ElRadioGroup> -->
+  </div>
+  <!-- <Popover v-model:open="open">
       <PopoverTrigger as-child>
         <div class="w-full">
           <Button variant="outline" role="combobox" :aria-expanded="open" class="w-full justify-between">
@@ -101,7 +99,6 @@ watch(selected, () => {
         </Command>
       </PopoverContent>
     </Popover> -->
-  </div>
 </template>
 
 <style>
