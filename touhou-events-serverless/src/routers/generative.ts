@@ -4,7 +4,7 @@ import { OPENAI_APIKEY } from "../../.env";
 import router from "../router";
 import { serializeJSON } from "../utils";
 
-router.post("/generative", async ({ env, req }) => {
+router.post("/generative", validateJWT, async ({ env, req }) => {
   const { url, title } = await req.json();
   if (!url || typeof url !== "string" || url.trim() === "") {
     return serializeJSON({
