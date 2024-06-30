@@ -1,14 +1,52 @@
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { LoaderCircle } from "lucide-vue-next";
+import { defineProps, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useStorage } from "@vueuse/core";
+import { THE_API_HOST } from "@/lib/utils";
 
+const route = useRoute();
+const isCallbacked = ref(route.path === "/steam/callback");
+const loginCredential = ref(route.query);
+const userJWT = useStorage("userJWT", "");
 function redirectSteam() {
   window.location.href = "https://api.touhou.events/steam/login";
+}
+onMounted(async () => {
+  if (isCallbacked.value)
+    await requestSession();
+});
+const requestComplete = ref(true);
+const errorMessages = ref<string>("");
+async function requestSession() {
+  requestComplete.value = false;
+  const response = await fetch(`http://localhost:8787/steam/callback?${
+    new URLSearchParams(loginCredential.value).toString()
+    }`).then(r => r.json());
+  if (!response.authResponse.status)
+    errorMessages.value = response.authResponse.error;
+  if (response.accessToken)
+    userJWT.value = response.accessToken;
+
+  requestComplete.value = true;
 }
 </script>
 
 <template>
   <div class="w-full h-full flex items-center justify-center">
     <div
+      v-show="isCallbacked"
+      class="flex flex-col gap-2 p-4 rounded-lg shadow-md w-96 h-32 items-center justify-center bg-gray-600"
+    >
+      <span v-if="!requestComplete" class="text-lg text-slate-200">正在登录...</span>
+      <LoaderCircle v-if="!requestComplete" class="h-8 w-8 animate-spin text-white" />
+      <div v-if="requestComplete" class="flex flex-row items-center gap-2">
+        <span class="text-lg text-slate-200">登录失败:</span>
+        <span class="text-lg text-slate-200">{{ errorMessages }}</span>
+      </div>
+    </div>
+    <div
+      v-show="!isCallbacked"
       class="flex flex-row items-center gap-2 p-4 rounded-lg shadow-md bg-slate-500 select-none hover:cursor-pointer hover:shadow-lg"
       @click="redirectSteam"
     >

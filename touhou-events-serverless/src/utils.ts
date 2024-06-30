@@ -72,6 +72,7 @@ export async function validateSteamResponse(queryParams: URLSearchParams) {
       return {
         status: false,
         error: "Steam login verification failed",
+        raw: text,
       };
     }
   }
@@ -188,7 +189,7 @@ export class GitHub {
         total_count: r.total_count,
         items: r.items,
       };
-    })
+    });
     const items = searchResult.items.map((i: any) => {
       return {
         ...i,

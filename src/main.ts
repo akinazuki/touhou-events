@@ -26,6 +26,10 @@ const routes = [
     component: EventDetail,
   },
   {
+    path: "/steam/callback",
+    component: LoginPage,
+  },
+  {
     path: "/mnt-event/:slug?",
     component: MaintainEvent,
   },
