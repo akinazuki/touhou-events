@@ -1,6 +1,7 @@
 import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
+import { decode } from "js-base64";
 
 const userJWT = useStorage("userJWT", "");
 export interface Maintainer {
@@ -11,11 +12,12 @@ export interface Maintainer {
 }
 export const userUserStore = defineStore("user", () => {
   const maintainer = computed(() => {
-    if (!userJWT.value)
+    if (!userJWT.value || userJWT.value === "")
       return null;
 
     const b64Data = userJWT.value.split(".")[1];
-    const userData = JSON.parse(atob(b64Data));
+
+    const userData = JSON.parse(decode(b64Data));
     return userData.payload as Maintainer;
   });
   function setJWT(token: string) {
@@ -25,6 +27,5 @@ export const userUserStore = defineStore("user", () => {
     maintainer,
     defaultAvatar: "https://vip2.loli.io/2022/10/04/k5NG4zLcdRZmTM6.png",
     setJWT,
-    loggedIn: !!maintainer,
   };
 });
