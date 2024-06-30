@@ -5,7 +5,9 @@ import { twMerge } from "tailwind-merge";
 import type { Event } from "./database";
 import { db } from "./database";
 
+export const THE_API_HOST = "https://api.touhou.events";
 const cachedEtag = useStorage("events-etag", "");
+const userJWT = useStorage("userJWT", "");
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,8 +15,25 @@ export function cn(...inputs: ClassValue[]) {
 export function deepCopy<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
+export async function generateSummary(obj: { url: string; title: string }) {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${userJWT.value}`);
+
+  const raw = JSON.stringify({
+    url: obj.url,
+    title: obj.title,
+  });
+
+  return await fetch(`${THE_API_HOST}/generative`, {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  }).then(response => response.json());
+}
 export async function cacheEvents() {
-  const gziped = await fetch("http://localhost:8787/events", {
+  const gziped = await fetch(`${THE_API_HOST}/events`, {
     headers: {
       "If-None-Match": cachedEtag.value,
     },

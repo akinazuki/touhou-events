@@ -4,13 +4,14 @@ import { computedAsync, watchDebounced } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
 import { ElCheckbox } from "element-plus";
+import { LoaderCircle, WandSparkles } from "lucide-vue-next";
 import MarkdownRender from "./MarkdownRender.vue";
 import type { Event, LocationEntity } from "@/lib/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { deepCopy, getEventBySlug } from "@/lib/utils";
+import { deepCopy, generateSummary, getEventBySlug } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import LocationSearch from "@/components/LocationSearch.vue";
 import TabSwitch from "@/components/TabSwitch.vue";
@@ -95,6 +96,16 @@ const isOnlineEvent = computed({
     event.value.location.entity = [];
   },
 });
+const generativeSummaryRunning = ref(false);
+async function generateSummaryClicked() {
+  generativeSummaryRunning.value = true;
+  const res = await generateSummary({
+    title: event.value.title,
+    url: event.value.url,
+  });
+  generativeSummaryRunning.value = false;
+  event.value.desc = res.content;
+}
 </script>
 
 <template>
@@ -111,7 +122,14 @@ const isOnlineEvent = computed({
       </div>
       <div class="flex flex-col gap-2 w-full">
         <label for="url" class="text-sm">URL</label>
-        <Input v-model="event.url" type="text" />
+        <div class="flex flex-row gap-2">
+          <Input v-model="event.url" type="text" />
+          <Button class="flex flex-row gap-2" @click="generateSummaryClicked">
+            <WandSparkles v-show="!generativeSummaryRunning" class="h-4 w-4" />
+            <LoaderCircle v-show="generativeSummaryRunning" class="h-4 w-4 animate-spin" stroke-width="3" />
+            <span>生成描述</span>
+          </Button>
+        </div>
         <!-- <a :href="event.url" target="_blank" class="text-blue-500 hover:underline font-bold">
         {{ event.title }}
       </a> -->
@@ -124,9 +142,7 @@ const isOnlineEvent = computed({
       <div v-show="!isOnlineEvent" class="flex flex-row gap-1">
         <Input v-model="event.location.text" class="w-[50%]" type="text" placeholder="地点" />
         <LocationSearch
-          v-if="event.location.text"
-          class="w-[50%]"
-          :location-entity="event.location?.entity"
+          v-if="event.location.text" class="w-[50%]" :location-entity="event.location?.entity"
           @update:location-entity-selected="locationEntitySelected"
         />
       </div>
