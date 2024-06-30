@@ -2,7 +2,7 @@ import { text } from "node:stream/consumers";
 import _ from "lodash";
 import { OPENAI_APIKEY } from "../../.env";
 import router from "../router";
-import { serializeJSON } from "../utils";
+import { serializeJSON, validateJWT } from "../utils";
 
 router.post("/generative", validateJWT, async ({ env, req }) => {
   const { url, title } = await req.json();
